@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DORA-PI · Physical Intelligence 物理智能机器人主控板</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  /* ===== dora-rs.ai design tokens (default "black" theme — neutral dark gray) ===== */
+  :root{
+    --color-bg:#0a0a0f;
+    --color-bg-secondary:#12121a;
+    --color-surface-1:#1c1c28;
+    --color-surface-2:#26263a;
+    --color-surface-3:#35354d;
+    --color-neutral-1:#5a5a7a;
+    --color-neutral-2:#88a;
+    --color-text:#e8e8f0;
+    --color-text-bright:#fafafa;
+    --color-text-dim:#88a;
+    --color-accent:#00d4aa;
+    --color-accent-dark:#00a882;
+    --color-heading:#00d4aa;
+    --color-title:#ffb84d;
+    --color-link:#00d4aa;
+    --color-code:#ffb84d;
+    --color-accent-rgb:0,212,170;
+    --color-title-rgb:255,184,77;
+    --color-warn:#ff9d6b;
+    --font-sans:"Geist","PingFang SC","Microsoft YaHei",system-ui,-apple-system,BlinkMacSystemFont,"Hiragino Sans GB",sans-serif;
+    --font-mono:"Geist Mono",ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;
+  }
+  /* ===== dora-rs.ai "light" theme ===== */
+  html[data-theme=light]{
+    --color-bg:#f5f5fa;--color-bg-secondary:#eaeaf2;
+    --color-surface-1:#fff;--color-surface-2:#e0e0ee;--color-surface-3:#ccd;
+    --color-neutral-1:#88a;--color-neutral-2:#557;
+    --color-text:#1a1a2e;--color-text-bright:#0a0a1a;--color-text-dim:#668;
+    --color-accent:#097;--color-accent-dark:#075;
+    --color-heading:#086;--color-title:#c80;--color-link:#086;--color-code:#c80;
+    --color-accent-rgb:0,119,119;--color-title-rgb:204,136,0;--color-warn:#b35100;
+  }
+  html{transition:background-color .3s,color .3s}
+  html[data-theme=light] .hero-bg{opacity:.22}
+  body{transition:background-color .3s,color .3s}
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--color-bg);color:var(--color-text);
+    font-family:var(--font-sans);line-height:1.75;
+    max-width:1920px;margin:0 auto;overflow-x:clip;
+  }
+  .wrap{max-width:1120px;margin:0 auto;padding:0 24px}
+  a{color:var(--color-link);text-decoration:none}
+  a:hover{text-decoration:underline}
+  code{font-family:var(--font-mono);color:var(--color-code);font-size:.9em}
+
+  /* ===== header ===== */
+  header{position:sticky;top:0;z-index:50;background:color-mix(in oklab,var(--color-bg) 80%,transparent);backdrop-filter:blur(12px);border-bottom:1px solid var(--color-surface-2)}
+  header .wrap{display:flex;align-items:center;justify-content:space-between;height:64px}
+  .logo{display:flex;align-items:center;gap:10px;font-weight:800;font-size:22px;color:var(--color-text-bright);letter-spacing:.5px}
+  .logo:hover{text-decoration:none}
+  .logo em{font-style:normal;color:var(--color-accent)}
+  .logo small{font-size:10px;color:var(--color-text-dim);font-weight:500;letter-spacing:3px;margin-left:2px;align-self:flex-end;padding-bottom:3px}
+  nav a{color:var(--color-text-dim);margin-left:16px;font-size:13.5px;font-weight:500;white-space:nowrap}
+  nav a:hover{color:var(--color-accent);text-decoration:none}
+  @media(max-width:1100px){nav{display:none}}
+  #theme-toggle{
+    display:flex;align-items:center;gap:8px;cursor:pointer;
+    border:1px solid var(--color-surface-2);border-radius:999px;
+    background:var(--color-surface-1);color:var(--color-text-dim);
+    padding:6px 14px;font-size:12px;font-family:var(--font-mono);letter-spacing:1px;
+    transition:border-color .2s,color .2s;
+  }
+  #theme-toggle:hover{border-color:var(--color-accent);color:var(--color-accent)}
+  #theme-toggle svg{width:14px;height:14px;fill:currentColor}
+  .hidden{display:none!important}
+
+  /* ===== hero (merged with blueprint background, dora-rs.ai style) ===== */
+  .hero-merged{
+    background:
+      radial-gradient(ellipse 70% 55% at 50% -5%,rgba(var(--color-accent-rgb),.12),transparent),
+      radial-gradient(ellipse 45% 40% at 85% 25%,rgba(var(--color-title-rgb),.06),transparent);
+  }
+  .tag{
+    display:inline-block;border:1px solid rgba(var(--color-accent-rgb),.35);border-radius:999px;
+    padding:8px 22px;font-size:15px;backdrop-filter:blur(6px);color:var(--color-accent);
+    background:rgba(var(--color-accent-rgb),.08);margin-bottom:26px;font-weight:500;letter-spacing:1px;
+  }
+  .caps{max-width:780px;margin:32px auto 0;text-align:left;border:1px solid var(--color-surface-2);border-radius:12px;overflow:hidden;background:color-mix(in oklab,var(--color-bg) 72%,transparent);backdrop-filter:blur(8px)}
+  .cap-item{display:flex;gap:16px;padding:11px 20px;border-bottom:1px solid var(--color-surface-2);align-items:baseline}
+  .hero-bullets{list-style:none;max-width:980px;margin:36px auto 0;text-align:center;display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px 24px}
+  .hero-bullets li{font-size:15.5px;text-shadow:0 1px 8px rgba(0,0,0,.7),0 0 2px rgba(0,0,0,.9);color:color-mix(in oklab,var(--color-text-bright) 78%,transparent);line-height:1.6;padding-left:16px;position:relative}
+  
+  .hero-bullets li b{color:var(--color-accent);font-weight:600}
+  @media(max-width:820px){.hero-bullets{grid-template-columns:1fr}}
+  .cap-item:last-child{border-bottom:none}
+  .cap-k{font-family:var(--font-mono);font-size:13px;color:var(--color-accent);letter-spacing:1px;white-space:nowrap;min-width:72px;font-weight:600}
+  .cap-v{font-size:14px;color:var(--color-text-dim)}
+  .cta{margin-top:44px;display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
+  /* merged hero: text overlaid on blueprint image, dora-rs.ai style */
+  .hero-merged{position:relative;overflow:hidden;text-align:center;min-height:86vh;display:flex;align-items:center;justify-content:center;padding:110px 0}
+  .hero-bg{position:absolute;inset:0;background:url("images/hero-blueprint.png") center center/cover no-repeat;opacity:.32}
+  .hero-content{position:relative;z-index:1}
+  .hero-content h1{font-size:96px;line-height:1.05;letter-spacing:2px;color:var(--color-title);font-weight:900;margin-top:26px}
+  .hero-content h1 .dim{color:var(--color-text-bright);font-weight:700}
+  .hero-content .sub{font-size:19px;font-weight:500;color:var(--color-text-bright);max-width:840px;margin:24px auto 0;line-height:1.8}
+  @media(max-width:820px){.hero-content h1{font-size:56px}.hero-merged{min-height:60vh;padding:80px 0}}  .hero-art img{width:100%;display:block}
+  html[data-theme=light] .hero-art img{filter:invert(.92) hue-rotate(160deg) saturate(.7)}
+  .btn{
+    display:inline-block;padding:12px 30px;border-radius:10px;font-weight:600;font-size:15px;
+    border:1px solid var(--color-accent);transition:all .2s;
+  }
+  .btn.primary{background:var(--color-accent);color:#fff}
+  html:not([data-theme=light]) .btn.primary{color:#04241c}
+  .btn.primary:hover{background:var(--color-accent-dark);text-decoration:none}
+  .btn.ghost{color:var(--color-accent);background:transparent}
+  .btn.ghost:hover{background:rgba(var(--color-accent-rgb),.1);text-decoration:none}
+  @media(max-width:820px){.hero h1{font-size:38px}}
+
+  /* ===== sections ===== */
+  section{padding:72px 0;position:relative}
+  .kicker{font-family:var(--font-mono);font-size:13px;color:var(--color-accent);letter-spacing:2px;text-transform:uppercase;margin-bottom:10px}
+  h2{font-size:34px;color:var(--color-title);margin-bottom:10px;font-weight:700;letter-spacing:-.3px}
+  h2 .accent{color:var(--color-accent)}
+  .lead{color:var(--color-text-dim);margin-bottom:32px;max-width:800px;font-size:15.5px}
+  .lead b{color:var(--color-text)}
+
+  .grid{display:grid;gap:20px}
+  .cols2{grid-template-columns:repeat(2,1fr)}
+  .cols3{grid-template-columns:repeat(3,1fr)}
+  @media(max-width:860px){.cols2,.cols3{grid-template-columns:1fr}}
+
+  /* glass panel — dora signature card */
+  .card{
+    background:linear-gradient(135deg,color-mix(in oklab,var(--color-surface-1) 60%,transparent),color-mix(in oklab,var(--color-surface-1) 30%,transparent));
+    backdrop-filter:blur(20px);
+    border:1px solid rgba(var(--color-accent-rgb),.15);
+    border-radius:12px;padding:26px;
+    box-shadow:0 8px 32px rgba(0,0,0,.3);
+    transition:border-color .2s,transform .2s;
+  }
+  html[data-theme=light] .card{box-shadow:0 4px 16px rgba(0,0,0,.08)}
+  .card:hover{border-color:rgba(var(--color-accent-rgb),.35)}
+  .card .stat{font-family:var(--font-mono);font-size:12px;color:var(--color-accent);letter-spacing:1px;margin-bottom:8px;display:block}
+  .card h3{font-size:17px;color:var(--color-text-bright);margin-bottom:8px;font-weight:600}
+  .card p{color:var(--color-text-dim);font-size:14.5px}
+  .node-list{list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:8px 16px;margin-top:4px}
+  .node-list li{font-size:13px;color:var(--color-text-dim);line-height:1.5;padding-left:14px;position:relative}
+  .node-list li::before{content:"";position:absolute;left:0;top:9px;width:5px;height:5px;border-radius:50%;background:var(--color-accent)}
+  .node-list li b{color:var(--color-text)}
+  .node-list li code{font-size:12px;word-break:break-all}
+  .node-list li br+code{line-height:1.4}
+  .node-list.single{grid-template-columns:1fr}
+  .card.hl{border-color:rgba(var(--color-title-rgb),.35)}
+  .card.hl:hover{border-color:rgba(var(--color-title-rgb),.6)}
+  .card.hl h3{color:var(--color-title)}
+
+  /* ===== table ===== */
+  table{width:100%;border-collapse:collapse;border:1px solid var(--color-surface-2);border-radius:12px;overflow:hidden;background:color-mix(in oklab,var(--color-surface-1) 35%,transparent)}
+  th,td{padding:13px 18px;text-align:left;border-bottom:1px solid var(--color-surface-2);font-size:14.5px;vertical-align:top}
+  th{color:var(--color-heading);width:130px;font-weight:600;white-space:nowrap;background:color-mix(in oklab,var(--color-surface-1) 60%,transparent)}
+  tr:last-child th,tr:last-child td{border-bottom:none}
+  td{color:var(--color-text-dim)}
+  td ul{margin-left:18px}
+
+  /* ===== photos ===== */
+  .photos{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+  @media(max-width:860px){.photos{grid-template-columns:1fr}}
+  .photo{border:1px solid var(--color-surface-2);border-radius:12px;overflow:hidden;background:color-mix(in oklab,var(--color-surface-1) 35%,transparent)}
+  .photo img{width:100%;display:block;background:#fff}
+  .photo.transparent img{background:radial-gradient(circle at 50% 40%,var(--color-surface-3),var(--color-bg-secondary));padding:24px}
+  .photo .cap{padding:12px 16px;font-size:13px;color:var(--color-text-dim);border-top:1px solid var(--color-surface-2)}
+
+  /* ===== vs ===== */
+  .vs{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+  @media(max-width:860px){.vs{grid-template-columns:1fr}}
+  .vs .side{border-radius:12px;padding:26px;border:1px solid var(--color-surface-2);background:color-mix(in oklab,var(--color-surface-1) 35%,transparent)}
+  .vs .bad h3{color:var(--color-warn)}
+  .vs .bad{border-color:color-mix(in oklab,var(--color-warn) 20%,transparent)}
+  .vs .good{border-color:rgba(var(--color-accent-rgb),.3)}
+  .vs .good h3{color:var(--color-accent)}
+  .vs h3{font-size:17px;margin-bottom:12px}
+  .vs li{margin:9px 0 9px 18px;color:var(--color-text-dim);font-size:14.5px}
+  .vs li b{color:var(--color-text)}
+
+  .callout{
+    border:1px solid rgba(var(--color-accent-rgb),.25);border-left:3px solid var(--color-accent);
+    background:rgba(var(--color-accent-rgb),.06);border-radius:12px;
+    padding:20px 24px;margin-top:24px;font-size:15px;color:var(--color-text);
+  }
+  .callout b{color:var(--color-accent)}
+  .note{margin-top:16px;font-size:12.5px;color:var(--color-neutral-2)}
+
+  .alt{background:var(--color-bg-secondary)}
+
+  footer{border-top:1px solid var(--color-surface-2);padding:36px 0;color:var(--color-text-dim);font-size:13px;text-align:center;font-family:var(--font-mono)}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <a class="logo" href="#">DORA-<em>PI</em><small>PHYSICAL INTELLIGENCE</small></a>
+    <nav>
+      <a href="#features">核心优势</a>
+      <a href="#specs">硬件规格</a>
+      <a href="#peripherals">外设接入</a>
+      <a href="#design">外观设计</a>
+      <a href="#software">软件栈</a>
+      <a href="#xingshan">星闪通信</a>
+      <a href="#edge">边缘算力</a>
+      <a href="#scenes">应用场景</a>
+    </nav>
+    <button id="theme-toggle" aria-label="切换主题">
+      <svg class="theme-icon-black hidden" viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8z"/><circle cx="12" cy="12" r="5"/></svg>
+      <svg class="theme-icon-light hidden" viewBox="0 0 24 24"><path d="M12 17a5 5 0 1 0-5-5 5 5 0 0 0 5 5zm0-13h0a1 1 0 0 0 1-1V2a1 1 0 0 0-2 0v1a1 1 0 0 0 1 1zm0 18h0a1 1 0 0 0-1 1v1a1 1 0 0 0 2 0v-1a1 1 0 0 0-1-1zM4 11H3a1 1 0 0 0 0 2h1a1 1 0 0 0 0-2zm18 0h-1a1 1 0 0 0 0 2h1a1 1 0 0 0 0-2zM6.34 5.22 5.4 4.28a1 1 0 0 0-1.41 1.41l.94.94A1 1 0 0 0 6.34 5.22zm13.37 13.37-.94-.94a1 1 0 0 0-1.41 1.41l.94.94a1 1 0 0 0 1.41-1.41zM5.4 19.72l.94-.94a1 1 0 1 0-1.41-1.41l-.94.94a1 1 0 0 0 1.41 1.41zM18.6 4.28l-.94.94a1 1 0 0 0 1.41 1.41l.94-.94a1 1 0 0 0-1.41-1.41z"/></svg>
+      <span id="theme-label">black</span>
+    </button>
+  </div>
+</header>
+
+<section class="hero-merged">
+  <div class="hero-bg"></div>
+  <div class="wrap hero-content">
+    <div class="tag">面向 Physical AI 时代的机器人大脑</div>
+    <h1>DORA-PI</h1>
+    <p class="sub">基于 ARM 计算平台，预集成 <b>dora</b> 数据流框架、OminiX-API 本地推理环境与星闪（NearLink）机器人无线通信——以"通信、计算、软件框架、算法、AI 模型"五维一体的设计，为机器人的"感知—决策—执行—通信"全链路提供开箱即用的 Physical Intelligence 底座。</p>
+    <div class="cta">
+      <a class="btn primary" href="#specs">查看规格</a>
+    </div>
+  </div>
+</section>
+
+<section id="features" class="alt">
+  <div class="wrap">
+    <p class="kicker">Core Capabilities</p>
+    <h2>核心优势</h2>
+    <p class="lead">八项为机器人而生的关键能力</p>
+    <div class="grid cols3">
+      <div class="card"><span class="stat">COMPUTE</span><h3>强劲异构算力</h3><p>四核 Cortex-A72 + 四核 Cortex-A53，主频 2.2GHz，CPU 算力 58K DMIPS；独立 6TOPS INT8 NPU，支持 INT4/8/16、FP16/BF16/TF32 混合精度，兼容 TensorFlow / PyTorch，可本地部署轻量大语言模型与视觉算法。</p></div>
+      <div class="card"><span class="stat">AUDIO</span><h3>专业级麦克风阵列</h3><p>板载一路环形 8 麦克风阵列，预留级联环麦接口，支持 10 米远程定向语音拾取、360° 全向拾音与 DOA 声源定位；I2S 高精度输出配合 USB 音频通路实现回声消除、噪声抑制与波束成形，保证嘈杂环境下与机器人的可靠语音通信。</p></div>
+      <div class="card"><span class="stat">VISION</span><h3>高清视觉与编解码</h3><p>Mali-G52 MC3 GPU @ 1GHz，支持 OpenGL ES 3.2 / Vulkan 1.1 / OpenCL 2.0；VPU 支持 H.265/HEVC/AVS2/VP9/AV1 8K@30fps 或 4K@120fps 解码，H.265/H.264 4K@60fps 编码；Type-C 支持 DP1.4 4K@120fps 显示输出。</p></div>
+      <div class="card"><span class="stat">MEMORY</span><h3>大内存大存储</h3><p>8GB / 16GB LPDDR4X + 64GB eMMC，为多模型并发推理、大规模 SLAM 建图、本地知识库缓存提供充裕空间，保障机器人长时间连续运行的稳定性。</p></div>
+      <div class="card"><span class="stat">POWER & I/O</span><h3>宽压供电与丰富外设接口</h3><p>12V–24V 宽电压 DC 供电，XT30 航模插头兼容主流机器人锂电池组；外设接口预留丰富：2× RJ45 千兆网口、4× USB 3.2、USB 3.0/DP、Type-C USB 2.0（调试）、2× CAN、UART、2× I2C——总线、网络、调试一站式到位，适配配送、巡检、清洁等多种机器人形态。</p></div>
+      <div class="card"><span class="stat">NEARLINK</span><h3>星闪无线通信</h3><p>板载星闪 1.0 模组（星闪 2.0 模组 2027 年提供），全面支持 NearLink 标准——以确定性时延、强 QoS 调度、高精度时间同步与 5G 级信道编码，替代 WiFi 承担传感器数据流与实时控制链路（详见下文专章）。</p></div>
+      <div class="card hl"><span class="stat">DORA</span><h3>预集成 dora 框架</h3><p>出厂预装 <a href="https://dora-rs.ai/">dora</a> 数据流机器人框架：基于共享内存的零拷贝节点通信、声明式 YAML 数据流编排、多语言节点（Rust/Python/C/C++），与 ROS 2 可桥接共存，"感知—决策—执行"流水线开箱即跑。</p></div>
+      <div class="card hl"><span class="stat">LOCAL AI</span><h3>OminiX-API 本地推理</h3><p>预装 OminiX-API 本地推理环境：统一的本地大模型与视觉/语音模型服务接口，充分利用 6TOPS NPU，离线完成语音识别、视觉理解与轻量大模型推理，数据不出机器人。同一套 API 同时覆盖<b>边缘推理服务器</b>——板载 NPU 与昇腾 910B / RTX 5090 / Mac mini 等边缘后端共用统一接口，本地与远程推理对应用透明，按负载自动路由。</p></div>
+      <div class="card"><span class="stat">ECOSYSTEM</span><h3>开放软件生态</h3><p>完整 BSP 驱动包与 SDK 工具链，兼容 ROS / ROS 2；RKNN 工具链支持主流模型一键转换量化部署，配套 AI 算法参考案例，缩短从原型到量产的周期。</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="specs">
+  <div class="wrap">
+    <p class="kicker">Specifications</p>
+    <h2>硬件规格</h2>
+    <p class="lead">完整硬件技术指标</p>
+    <table>
+      <tr><th>CPU</th><td>Rockchip RK3576 · 四核 Cortex-A72 + 四核 Cortex-A53 · 8nm 先进工艺 · 主频高达 2.2GHz</td></tr>
+      <tr><th>GPU</th><td>G52 MC3 @ 1GHz · OpenGL ES 1.1/2.0/3.2、OpenCL 2.0、Vulkan 1.1 · 内嵌高性能 2D 加速硬件</td></tr>
+      <tr><th>VPU</th><td><ul><li>视频解码：H.265/HEVC/AVS2/VP9/AV1，8K@30fps 或 4K@120fps；H.264/AVC/MJPEG</li><li>视频编码：H.265/H.264 4K@60fps；MJPEG 4K@60fps</li></ul></td></tr>
+      <tr><th>NPU</th><td>6TOPS INT8，支持 INT4/8/16/FP16/BF16/TF32 混合运算</td></tr>
+      <tr><th>操作系统</th><td>Linux（预集成 dora 数据流框架与 OminiX-API 本地推理环境，兼容 ROS / ROS 2）</td></tr>
+      <tr><th>内存</th><td>8GB / 16GB LPDDR4X（可选配）</td></tr>
+      <tr><th>存储器</th><td>64GB eMMC</td></tr>
+      <tr><th>音频输入</th><td>1× 环形 8 麦克风阵列（预留级联环麦接口），支持 10 米远程定向语音拾取、360° 全向拾音与 DOA 声源定位</td></tr>
+      <tr><th>视频输入</th><td>1× MIPI CSI 接口</td></tr>
+      <tr><th>音频输出</th><td>最高 2×40W 立体声喇叭</td></tr>
+      <tr><th>视频输出</th><td>1× Type-C，支持 DP1.4（4K@120fps）</td></tr>
+      <tr><th>网络</th><td>2× RJ45 千兆以太网；板载星闪 1.0 模组（星闪 2.0 模组 2027 年提供）</td></tr>
+      <tr><th>外设接口</th><td><ul><li>4× USB 3.2</li><li>1× USB 3.0 / DP（显示输出）</li><li>1× Type-C USB 2.0（Debug 调试）</li><li>2× CAN 总线</li><li>1× UART</li><li>2× I2C</li></ul></td></tr>
+      <tr><th>其他接口</th><td>1× FPC 排线接口（含：1 路 USB、1 路 UART、1 路 I2S 和控制 IO）；I2S 信号仅用于 DOA 信号的输出，USB 信号用于音频的输入和输出，UART 用于通讯，IO 信号用于控制。电源接口：XT30 航模插头</td></tr>
+      <tr><th>供电</th><td>宽电压 DC 直流供电：12V–24V</td></tr>
+      <tr><th>整机尺寸</th><td>紧凑桌面级（具体尺寸待发布）</td></tr>
+      <tr><th>重量</th><td>待发布</td></tr>
+      <tr><th>工作温度</th><td>待发布</td></tr>
+      <tr><th>功耗</th><td>典型功耗 / 峰值功耗：待发布</td></tr>
+    </table>
+  </div>
+</section>
+
+<section id="design" class="alt">
+  <div class="wrap">
+    <p class="kicker">Industrial Design</p>
+    <h2>外观设计</h2>
+    <p class="lead">CNC 加工铝合金外壳 · 银灰色阳极氧化 · 紧凑桌面级尺寸 · 三面视图</p>
+    <div class="photo" style="max-width:100%">
+      <img src="images/enclosure-3view.png" alt="DORA-PI 外观设计三面视图（正视 / 顶视 / 后视）">
+      <div class="cap">DORA-PI 外观设计三面视图 —— 正视：CNC 银灰铝合金机身 + 雕刻 logo；顶视：顶部正中央低噪散热风扇；后视：全部接口单排紧凑排列（2× RJ45、4× USB 3.2、竖向 Type-C、2× CAN、UART、DC 供电、星闪天线），底部对齐。两侧 CNC 铣削散热格栅。</div>
+    </div>
+    <div class="grid cols3" style="margin-top:20px">
+      <div class="card"><span class="stat">ENCLOSURE</span><h3>CNC 一体成型</h3><p>6061 铝合金 CNC 精密加工，银灰色阳极氧化表面处理，倒角边缘，兼顾质感、强度与电磁屏蔽。</p></div>
+      <div class="card"><span class="stat">COOLING</span><h3>立体散热设计</h3><p>两侧 CNC 铣削散热格栅形成对流风道，顶部中央低噪风扇主动排热，保障 6TOPS NPU 长时间满负荷运行。</p></div>
+      <div class="card"><span class="stat">REAR I/O</span><h3>后置全部接口</h3><p>所有物理接口集中于后部面板，前面板保持极简——机器人整机走线整洁，维护时无需拆卸前面板。</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="software">
+  <div class="wrap">
+    <p class="kicker">Software Stack</p>
+    <h2>DORA-PI 独有软件栈</h2>
+    <p class="lead">不止于'能跑'，更要'出厂即跑'：dora 数据流 + 本地大模型推理一体化</p>
+    <div class="grid cols2">
+      <div class="card hl">
+        <span class="stat">DATAFLOW RUNTIME</span>
+        <h3>dora 数据流机器人框架</h3>
+        <p>预集成 <a href="https://dora-rs.ai/">dora-rs</a>：以数据流（dataflow）范式组织机器人软件，节点间基于 Apache Arrow 共享内存零拷贝传输，延迟远低于传统消息序列化中间件。一份 YAML 声明传感器、感知、规划、控制节点拓扑，dora 负责调度与热重载；节点可用 Rust / Python / C / C++ 编写，并提供 ROS 2 桥接，复用现有 ROS 生态组件。SLAM、语音交互、视觉检测等参考数据流图随板附带。</p>
+      </div>
+      <div class="card hl">
+        <span class="stat">LOCAL INFERENCE</span>
+        <h3>OminiX-API 本地推理环境</h3>
+        <p>预装 OminiX-API：为本地模型提供统一的 OpenAI 兼容 API 服务层，覆盖大语言模型、视觉理解、语音识别与合成等能力，模型经 RKNN 工具链转换后充分利用 6TOPS NPU。机器人无需联网即可完成"听懂—看懂—决策"闭环，敏感数据全程留在本地。同一套 API 同时覆盖边缘推理服务器（昇腾 910B / RTX 5090 / Mac mini 等）——本地与远程推理共用统一接口，对应用透明，按负载自动路由。</p>
+      </div>
+    </div>
+    <div class="callout"><b>开箱即用体验：</b>上电后 dora 运行时与 OminiX-API 服务自动就绪，开发者只需编写自己的节点或调用本地推理 API，数分钟内即可让机器人具备语音交互、视觉感知与运动决策能力。</div>
+
+    <h3 style="color:var(--color-heading);font-size:19px;margin:28px 0 14px">dora 算法与节点生态（dora Hub 60+ 官方节点，一行接入）</h3>
+    <div class="grid cols3">
+      <div class="card"><span class="stat">MOTION & NAV</span><h3>规划与导航</h3>
+        <ul class="node-list">
+          <li><b>MoveIt</b> 运动规划<br><code>dora-moveit2</code> · 运动学 / 轨迹规划 / 碰撞检测</li>
+          <li><b>Nav2</b> 导航栈<br><code>DORA_NAV</code> · 点云建图 / 路径规划 / 行为树</li>
+        </ul>
+      </div>
+      <div class="card"><span class="stat">VISION</span><h3>视觉算法</h3>
+        <ul class="node-list">
+          <li><b>OpenCV</b><br><code>opencv-video-capture</code> · <code>opencv-plot</code></li>
+          <li><b>YOLO</b> 实时检测<br><code>dora-yolo</code> · NPU 推理</li>
+          <li>图像分割<br><code>dora-sam2</code></li>
+          <li>3D 重建<br><code>dora-vggt</code></li>
+          <li>人体姿态<br><code>dora-mediapipe</code></li>
+          <li>位姿估计<br><code>dora-object-to-pose</code></li>
+        </ul>
+      </div>
+      <div class="card"><span class="stat">SPEECH</span><h3>语音算法</h3>
+        <ul class="node-list">
+          <li>语音识别<br><code>dora-funasr</code> · <code>dora-distil-whisper</code></li>
+          <li>端点检测<br><code>dora-vad</code></li>
+          <li>语音合成<br><code>dora-kokoro-tts</code> · <code>dora-piper</code></li>
+          <li>实时翻译<br><code>dora-translate</code></li>
+        </ul>
+      </div>
+      <div class="card"><span class="stat">SENSORS</span><h3>传感器接入</h3>
+        <ul class="node-list">
+          <li>RealSense 深度相机<br><code>dora-pyrealsense</code></li>
+          <li>奥比中光深度相机<br><code>dora-pyorbbecksdk</code></li>
+          <li>LiDAR<br><code>dora-ios-lidar</code></li>
+          <li>音频采集<br><code>dora-microphone</code> · <code>dora-pyaudio</code></li>
+        </ul>
+      </div>
+      <div class="card"><span class="stat">CONTROL</span><h3>机器人控制</h3>
+        <ul class="node-list">
+          <li>LeRobot 策略<br><code>dora-lerobot</code></li>
+          <li>策略推理<br><code>dora-policy-inference</code></li>
+          <li>运动学<br><code>dora-pytorch-kinematics</code></li>
+          <li>舵机驱动<br><code>dora-rustypot</code></li>
+          <li>Reachy 人形<br><code>dora-reachy1</code> · <code>dora-reachy2</code></li>
+          <li>底盘<br><code>dora-kit-car</code> · <code>dora-ugv</code></li>
+          <li>XR 遥操作<br><code>dora-teleop-xr</code></li>
+          <li>Franka 机械臂<br><code>libfranka-rs</code></li>
+        </ul>
+      </div>
+      <div class="card"><span class="stat">SIM & TOOLS</span><h3>仿真与工具</h3>
+        <ul class="node-list">
+          <li>MuJoCo 仿真<br><code>dora-mujoco</code></li>
+          <li>可视化<br><code>dora-rerun</code></li>
+          <li>Web UI<br><code>dora-gradio</code></li>
+          <li>数据录制<br><code>dora-record</code> · <code>dora-parquet-recorder</code></li>
+          <li>MCP 智能体<br><code>dora-mcp-server</code> · <code>dora-mcp-host</code></li>
+          <li>编解码<br><code>dora-rav1e</code> · <code>dora-dav1d</code></li>
+        </ul>
+      </div>
+    </div>
+    <p class="note" style="margin-top:14px">dora Hub 提供 60+ 官方节点（<a href="https://github.com/dora-rs/dora-hub">github.com/dora-rs/dora-hub</a>），一行接入：<code>hub: dora-yolo@^0.5</code>。</p>
+
+  </div>
+</section>
+
+<section id="xingshan" class="alt">
+  <div class="wrap">
+    <p class="kicker">Wireless for Robots</p>
+    <h2>星闪：<span class="accent">为机器人而生的无线通信</span></h2>
+    <p class="lead">WiFi 为办公上网设计，星闪为确定性控制设计——机器人该用哪一个，一目了然</p>
+
+    <div class="vs">
+      <div class="side bad">
+        <h3>WiFi 6 / WiFi 7 在机器人场景的问题</h3>
+        <ul>
+          <li><b>信道拥塞：</b>共享 ISM 频段（2.4GHz 仅 3 个互不重叠信道），CSMA/CA 竞争接入退避时延<b>无界</b>；WiFi 7 的 320MHz 超宽信道在拥挤频谱中更难找到干净频谱，多机 + 多 AP 场景隐藏节点碰撞加剧，实测常出现毫秒~数百毫秒级突发时延，直接破坏 1–10ms 级实时控制环。</li>
+          <li><b>缺乏真正的 QoS：</b>WMM/EDCA 只是<b>概率性</b>优先级——高优先级队列只是退避窗口更短、抢到信道的概率更高，无硬调度、无资源预留，<b>无法承诺时延上界</b>；WiFi 7 的 MLO（多链路聚合）改善了平均时延与吞吐，但每条链路仍是竞争接入，最坏情况时延依然无界。</li>
+          <li><b>缺乏可靠多播：</b>802.11 组播帧<b>无 ACK、不重传</b>，且按最低基本速率发送——要么不可靠（丢包无感知），要么退化为逐节点单播（N 份带宽）；ROS 2 DDS 的 UDP 多播发现在 WiFi 上因此常见失败与抖动。WiFi 7 未改变组播的底层语义。</li>
+          <li><b>漫游"先断后连"：</b>切换需扫描→重关联→重鉴权，802.1X 鉴权可达数百毫秒~秒级；即使 802.11r 也有 ~50ms 中断——对 1kHz 控制环即 50 个周期的失控窗口。MLO 可缓解但依赖全网 AP/终端配套。</li>
+          <li><b>时间同步弱：</b>PTP 设计于有线网络，跑在 WiFi 上受随机接入与软件时间戳影响，同步误差退化到<b>数十~数百微秒</b>；多机激光雷达/IMU 融合所需的 µs 级对齐在 WiFi 上缺乏可靠手段。</li>
+        </ul>
+      </div>
+      <div class="side good">
+        <h3>星闪（NearLink）的针对性设计</h3>
+        <ul>
+          <li><b>调度式接入 + 强 QoS：</b>SLB 采用 CP-OFDM 超短帧 + 集中式资源调度（类 5G grant-based）+ HARQ，从根上取代竞争接入——空口时延 <b>~20µs</b>、可靠性 <b>99.999%</b>，时延有界、可承诺，面向工业闭环控制设计。</li>
+          <li><b>5G 级信道编码：</b>采用与 5G 控制信道同源的 <b>Polar 码</b>，逼近香农限的链路可靠性；SLB 峰值 900Mbps–1.2Gbps（WiFi 6 量级），SLE 峰值 12Mbps，带宽利用率显著优于传统短距无线。</li>
+          <li><b>空口原生时基与定位：</b>同步/测距在空口协议栈内完成，无需应用层 PTP 补偿——多节点共享统一 µs 级时基，传感器数据天然带统一时间戳；2.0 标准扩展定位应用，SLP 模式提供亚米级定位。</li>
+          <li><b>大并发 + 抗干扰：</b>SLB 单网关支持 <b>4096 节点</b>并发接入（WiFi AP 约 256 关联上限），SLE 支持 256 节点且面向超低功耗传感设计；信道选择/跳频 + Polar 码抗突发误码，面向工厂强电磁环境设计。</li>
+          <li><b>可靠组播：</b>G/T 节点集中调度架构使组播经调度资源承载、可配可靠性（HARQ），天然适配"一个主控对 N 个执行器/传感器"的机器人拓扑。</li>
+        </ul>
+      </div>
+    </div>
+
+    <table style="margin-top:24px">
+      <tr><th>指标</th><td style="color:var(--color-text-bright);font-weight:600">WiFi 6</td><td style="color:var(--color-text-bright);font-weight:600">WiFi 7</td><td style="color:var(--color-text-bright);font-weight:600">星闪 SLB / SLE</td></tr>
+      <tr><th>空口时延</th><td>数 ms 级，抖动无界</td><td>~1ms 级（MLO 改善均值，最坏情况仍无界）</td><td>SLB ~20µs · SLE 双向 250µs</td></tr>
+      <tr><th>可靠性</th><td>无保证（竞争接入）</td><td>无硬保证（MLO 提升韧性，仍竞争接入）</td><td>99.999%（Polar 码 + HARQ）</td></tr>
+      <tr><th>峰值速率</th><td>理论 ~9.6Gbps</td><td>理论 ~46Gbps（320MHz + 4K-QAM）</td><td>SLB 900Mbps–1.2Gbps · SLE 12Mbps</td></tr>
+      <tr><th>并发连接</th><td>约 256/AP</td><td>约 256/AP</td><td>SLB 4096 节点 · SLE 256 节点</td></tr>
+      <tr><th>调度方式</th><td>CSMA/CA 竞争接入（概率性）</td><td>CSMA/CA + OFDMA/MLO（仍竞争，非硬调度）</td><td>集中调度（确定性，时延有界）</td></tr>
+      <tr><th>时间同步</th><td>依赖 PTP 软件补偿，数十~数百 µs 误差</td><td>同 WiFi 6（协议未定义全网时基）</td><td>空口原生时基，µs 级多节点对齐</td></tr>
+      <tr><th>可靠组播</th><td>无 ACK、不重传、低速率</td><td>同 WiFi 6（组播语义未变）</td><td>G/T 集中调度承载，可配 HARQ 可靠性</td></tr>
+    </table>
+
+    <h3 style="color:var(--color-heading);font-size:19px;margin:36px 0 6px">与有线 TSN 同源的设计逻辑</h3>
+    <p style="color:var(--color-text-dim);font-size:15.5px;margin-bottom:20px">汽车行业已经验证过这条路：标准以太网无法满足车载传感器与控制的确定性要求，于是有了 <b style="color:var(--color-text)">TSN（时间敏感网络）</b>——通过时间同步（802.1AS）、流量调度（802.1Qbv）与帧抢占（802.1Qbu）对以太网做硬性改造，让车载摄像头、雷达与控制指令跑在同一张确定性网络上。<b style="color:var(--color-text)">星闪对无线通信做的正是同样的改造</b>——把 TSN 级的确定性带到机器人的无线传感与控制链路，并彻底摆脱线缆。</p>
+    <table>
+      <tr><th>对比项</th><td style="color:var(--color-text-bright);font-weight:600">有线 TSN（车载以太网改造）</td><td style="color:var(--color-text-bright);font-weight:600">星闪 SLB（机器人无线改造）</td></tr>
+      <tr><th>改造目标</th><td>标准以太网 → 确定性车载网络，承载传感器流与控制指令</td><td>无线通信 → 确定性机器人网络，承载传感器流与控制指令</td></tr>
+      <tr><th>时间同步</th><td>802.1AS gPTP，µs 级</td><td>空口原生时基，µs 级多节点对齐</td></tr>
+      <tr><th>流量调度</th><td>802.1Qbv 时间感知整形（时隙调度）</td><td>G/T 节点集中调度，确定性时隙与优先级</td></tr>
+      <tr><th>可靠性</th><td>802.1CB 帧复制消除 + 帧抢占</td><td>Polar 码 + HARQ，99.999% 可靠性</td></tr>
+      <tr><th>介质</td><td>有线——每路传感器一根线，车内线束是整车最重部件之一，旋转部件需滑环</td><td><b>无线</b>——无走线、无滑环，机械臂末端与旋转云台自由部署</td></tr>
+    </table>
+    <div class="callout"><b>同一工程哲学的两个答案：</b>车载场景用 TSN 改造有线以太网解决确定性问题；DORA-PI 用星闪改造无线通信解决同一个问题——同时获得 TSN 级确定性与无线部署自由。这正是"机器人传感器与控制通信"应有的形态。</div>
+
+    <div class="callout"><b>DORA-PI 全面集成星闪：</b>板载星闪 1.0 模组（星闪 2.0 模组 2027 年提供），并在 dora 数据流框架中内置星闪传输节点——无线传感器数据流自动携带高精度时间戳进入数据流图，控制指令走星闪确定性通道下发；WiFi 仅保留用于大流量非实时业务（日志回传、OTA）。为机器人提供真正"有 QoS、可同步、能组播"的无线通信底座。</div>
+    <p class="note">星闪联盟（<a href="https://www.isla.org.cn">isla.org.cn</a>）2020 年成立，成员单位超 300 家；星闪芯片已实现亿级规模出货，标准与产业生态成熟。</p>
+  </div>
+</section>
+
+<section id="peripherals">
+  <div class="wrap">
+    <p class="kicker">Peripherals</p>
+    <h2>外设接入：传感器如何连接 DORA-PI</h2>
+    <p class="lead">LiDAR、深度相机、RGB 相机是机器人的三类核心传感器，DORA-PI 提供从板级到无线的完整接入方案——<b>有线全覆盖，星闪 Dongle 实现传感器无线化接入</b>。</p>
+
+    <table>
+      <tr><th>传感器</th><td style="color:var(--color-text-bright);font-weight:600">DORA-PI 接入方式</td><td style="color:var(--color-text-bright);font-weight:600">支持的主流设备</td><td style="color:var(--color-text-bright);font-weight:600">适用场景</td></tr>
+      <tr><th>LiDAR 激光雷达</th><td><b>千兆以太网</b>直连，点云即插即用；星闪 Dongle 无线接入（随星闪 2.0 生态推出）</td><td>Livox / RoboSense / Hesai 等主流雷达（RJ45 + UDP 点云协议），UART/USB 接口的三角雷达亦可直连</td><td>SLAM 建图、导航避障、多机协同感知</td></tr>
+      <tr><th>深度相机</th><td><b>USB 3.2</b> 直连（机内 ≤3m 部署）；星闪 Dongle 无线接入，机身任意位置部署</td><td>Intel RealSense、奥比中光 Orbbec、OAK 等主流深度相机</td><td>3D 感知、障碍物检测、抓取引导</td></tr>
+      <tr><th>RGB 相机</th><td>板级 <b>MIPI CSI-2</b> 直连 SoC（零拷贝进 dora 数据流）；整机 USB 3.2 / 以太网；星闪 Dongle 无线接入</td><td>MIPI 相机模组、USB 相机、GigE 工业相机</td><td>视觉识别、人脸交互、远程监控</td></tr>
+    </table>
+
+    <div class="callout" style="margin-top:24px"><b>为什么需要无线传感器接入：</b>机器人的传感器分布在机身各处——头顶 LiDAR、底盘补盲雷达、胸前深度相机、机械臂末端腕部相机。传统方案中，USB 仅支持约 3m、MIPI 仅限板内 30cm，远距离只能靠每路一根网线加独立供电，旋转关节处更是难以走线。星闪 Dongle 让传感器侧仅需供电即可接入，旋转云台、机械臂末端等位置从此摆脱线缆束缚。</div>
+
+    <div class="grid cols2" style="margin-top:24px">
+      <div class="card hl">
+        <span class="stat">2027 ROADMAP</span>
+        <h3>星闪 Dongle：传感器无线化接入</h3>
+        <p>星闪 Dongle（规划中的配套产品，随星闪 2.0 生态推出）让 LiDAR / 深度相机 / RGB 相机无线接入 DORA-PI：传感器本地经 USB/以太网/MIPI 短距连接 Dongle，Dongle 以星闪 SLB 通道将数据流无线上行——基于星闪 SLB 标准能力：<b>确定性时延（~20µs 空口）、空口原生时间戳、单网关 4096 节点</b>，一个 DORA-PI 即可带全身传感器。</p>
+      </div>
+      <div class="card hl">
+        <span class="stat">DATAFLOW NATIVE</span>
+        <h3>dora 数据流原生支持</h3>
+        <p>星闪 Dongle 接入的传感器在 dora 数据流中表现为普通节点：点云、深度图、RGB 帧携带<b>统一空口时基时间戳</b>进入数据流图，多传感器时间对齐天然完成，无需 PTP 软件补偿；传感器掉线重连由星闪 QoS 与 dora 容错策略（重启/退避）联合保障。</p>
+      </div>
+    </div>
+
+    <table style="margin-top:24px">
+      <tr><th>对比项</th><td style="color:var(--color-text-bright);font-weight:600">USB 3.x</td><td style="color:var(--color-text-bright);font-weight:600">以太网</td><td style="color:var(--color-text-bright);font-weight:600">MIPI CSI-2</td><td style="color:var(--color-text-bright);font-weight:600">星闪 Dongle（规划中）</td></tr>
+      <tr><th>传输距离</th><td>约 3m</td><td>100m</td><td>约 30cm（板内）</td><td>约 100m（无线）</td></tr>
+      <tr><th>时间同步</th><td>软件打戳</td><td>PTP，µs 级</td><td>—</td><td>空口原生时基，µs 级多传感器对齐</td></tr>
+      <tr><th>布线</th><td>每路一根线</td><td>网线 + 独立供电</td><td>FPC 排线</td><td><b>无线</b>，传感器侧仅需供电</td></tr>
+      <tr><th>旋转关节</th><td>线缆缠绕</td><td>需滑环</td><td>—</td><td><b>无线穿越</b>，天然支持</td></tr>
+    </table>
+    <p class="note">星闪 Dongle 为规划中的配套产品，随星闪 2.0 生态模组推出。</p>
+  </div>
+</section>
+
+<section id="edge" class="alt">
+  <div class="wrap">
+    <p class="kicker">Edge Cluster over NearLink</p>
+    <h2>星闪连接边缘算力：<span class="accent">算力随需扩展</span></h2>
+    <p class="lead">板载 6TOPS NPU 满足常规感知与交互；当需要更大模型或更强并发推理时，DORA-PI 可通过<b>星闪确定性链路直连边缘计算服务器</b>——以 20µs 级空口时延上行传感数据、下行推理结果，语音交互与视觉理解体验接近本地推理，算力可按需扩展至数据中心级。</p>
+
+    <h3 style="color:var(--color-heading);font-size:19px;margin-bottom:14px">可选边缘推理服务器</h3>
+    <div class="grid cols3">
+      <div class="card hl"><span class="stat">ASCEND 910B</span><h3>昇腾 910B 边缘服务器</h3><p>成熟的数据中心级 NPU 方案，适合多机共享的 VLA 大模型与大规模多模态推理，支撑整支机器人编队的集中智能。</p></div>
+      <div class="card hl"><span class="stat">RTX 5090</span><h3>RTX 5090 工作站</h3><p>32GB 大显存消费级旗舰，CUDA 生态开箱即用——π0 / GR00T 等开源 VLA 模型、世界模型推理与策略微调的主力后端。</p></div>
+      <div class="card hl"><span class="stat">MAC MINI</span><h3>Mac mini（M4 系列）</h3><p>统一内存架构 + MLX 推理框架，高能效静音部署 Qwen 系列大模型与语音模型，适合室内服务机器人场景的本地智能中枢。</p></div>
+    </div>
+    <p class="note" style="margin-top:12px">亦可选昇腾新一代 NPU，或任何接入同一星闪网络 / 以太网的标准服务器——皆可作为 dora 数据流中的远程推理节点。</p>
+
+    <h3 style="color:var(--color-heading);font-size:19px;margin:28px 0 14px">边缘服务器上运行的模型</h3>
+    <div class="grid cols3">
+      <div class="card"><span class="stat">SPEECH IN</span><h3>Qwen3-ASR</h3><p>语音识别大模型：DORA-PI 上 8 麦阵列拾取的音频流经星闪上行，边缘服务器完成高精度远场语音识别，嘈杂环境下依然可靠。</p></div>
+      <div class="card"><span class="stat">SPEECH OUT</span><h3>Qwen3-TTS</h3><p>语音合成大模型：富有表现力的自然语音回复在边缘生成，音频流实时下行至 DORA-PI 的 2×40W 喇叭播放。</p></div>
+      <div class="card"><span class="stat">VLA POLICY</span><h3>π0</h3><p>Physical Intelligence 开源的视觉-语言-动作（VLA）通用机器人策略模型——看懂场景、听懂指令、直接输出动作，DORA-PI 的"物理智能"名副其实。</p></div>
+      <div class="card"><span class="stat">VLA POLICY</span><h3>NVIDIA GR00T</h3><p>NVIDIA 开源的人形机器人基础模型（GR00T N 系列），面向通用操作与全身运动控制，边缘推理 + 本体执行的典型负载。</p></div>
+      <div class="card"><span class="stat">WORLD MODEL</span><h3>NVIDIA Cosmos 3 Edge</h3><p>NVIDIA 世界基础模型的边缘优化版本（Cosmos 3 Edge）：面向物理世界的视频生成与仿真，为机器人策略训练生成合成数据、评估动作后果，面向边缘部署优化，可与真实传感数据流闭环校验。</p></div>
+      <div class="card"><span class="stat">EDGE NPU</span><h3>板载轻量模型</h3><p>唤醒词、人脸识别、障碍物检测等低延迟反射式任务仍在 DORA-PI 的 6TOPS NPU 上本地完成——端边分工，各得其所。</p></div>
+    </div>
+
+    <div class="callout"><b>工作原理：</b>DORA-PI 上运行的 dora 数据流可将任意节点声明为<b>远程节点</b>——传感数据（图像、点云、语音）经星闪 SLB 通道上行至边缘服务器，推理结果（检测框、规划指令、语音回复）沿确定性通道下行，全程由星闪 QoS 保障时延上界。本地 NPU 负责低延迟反射式任务（避障、唤醒词），MoveIt / Nav2 / OpenCV / YOLO 在本地完成感知、规划与控制，大模型任务无缝卸载到边缘——<b>端边协同，一层数据流搞定</b>。</div>
+  </div>
+</section>
+
+<section id="scenes">
+  <div class="wrap">
+    <p class="kicker">Use Cases</p>
+    <h2>典型应用场景</h2>
+    <p class="lead">强劲边缘 AI 算力、专业音频前端与丰富接口，覆盖主流机器人类型</p>
+    <div class="grid cols3">
+      <div class="card"><span class="stat">SERVICE</span><h3>服务机器人</h3><p>酒店配送、餐厅迎宾、商场导览：依托 8 麦阵列 10 米远场拾音实现自然语音交互，NPU 加速人脸识别与语义理解。</p></div>
+      <div class="card"><span class="stat">CLEANING</span><h3>商用清洁机器人</h3><p>MIPI CSI 视觉 + 千兆以太网实现环境感知与自主导航，6TOPS NPU 支撑实时障碍物检测与路径规划。</p></div>
+      <div class="card"><span class="stat">INSPECTION</span><h3>巡检机器人</h3><p>宽压供电适配户外长时间作业，8K 解码支持多路监控画面处理，星闪链路保障厂区内传感器数据可靠回传。</p></div>
+      <div class="card"><span class="stat">EDUCATION</span><h3>教育与科研机器人</h3><p>Linux + ROS / ROS 2 + dora 开放生态，配套 SDK 与 RKNN 工具链，适合高校实验室与 AI 算法验证平台。</p></div>
+      <div class="card"><span class="stat">KIOSK</span><h3>智能交互终端</h3><p>Type-C DP1.4 4K 显示输出与 2×40W 立体声喇叭，支持高清大屏交互与语音播报，是智能 kiosk、自助终端的核心控制板。</p></div>
+      <div class="card"><span class="stat">FLEET</span><h3>多机协作</h3><p>星闪组播与时间同步能力让多机器人共享地图、协同调度成为可能，适用于仓储 AMR 集群与表演机器人编队。</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="alt">
+  <div class="wrap">
+    <p class="kicker">Support</p>
+    <h2>技术支持与服务</h2>
+    <p class="lead">从原理图到量产，全程工程支持</p>
+    <div class="grid cols2">
+      <div class="card"><span class="stat">HARDWARE</span><h3>完整硬件资料</h3><p>原理图、PCB 参考设计、BOM 清单及硬件设计指南，助力快速完成整机硬件集成。</p></div>
+      <div class="card"><span class="stat">SDK</span><h3>软件 SDK 与工具链</h3><p>Linux BSP 驱动包、dora 运行时、OminiX-API 推理服务、RKNN 模型转换工具及 API 文档，支持二次开发与定制。</p></div>
+      <div class="card"><span class="stat">ALGORITHMS</span><h3>机器人算法参考</h3><p>语音交互、视觉识别、SLAM 导航等典型算法参考实现与 dora 数据流图模板，加速算法验证与原型开发。</p></div>
+      <div class="card"><span class="stat">TEAM</span><h3>技术支持团队</h3><p>专业硬件与软件工程师团队全程支持：原理图评审、驱动调试、算法移植及量产问题排查。</p></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    DORA-PI · Physical Intelligence 物理智能机器人主控板 · V1.0 · 2026<br>
+    dora: dora-rs.ai &nbsp;·&nbsp; 星闪联盟: isla.org.cn
+  </div>
+</footer>
+
+<script>
+(function(){
+  var themes = ["black","light"];
+  var btn = document.getElementById("theme-toggle");
+  var label = document.getElementById("theme-label");
+  var icons = {
+    black: btn.querySelector(".theme-icon-black"),
+    light: btn.querySelector(".theme-icon-light")
+  };
+  function apply(t){
+    if(t === "black"){ document.documentElement.removeAttribute("data-theme"); }
+    else { document.documentElement.setAttribute("data-theme", t); }
+    try{ localStorage.setItem("theme", t); }catch(e){}
+    Object.values(icons).forEach(function(i){ i.classList.add("hidden"); });
+    icons[t].classList.remove("hidden");
+    label.textContent = t;
+  }
+  var saved = "black";
+  try{ saved = localStorage.getItem("theme") || "black"; }catch(e){}
+  if(themes.indexOf(saved) < 0) saved = "black";
+  apply(saved);
+  btn.addEventListener("click", function(){
+    var cur = "black";
+    try{ cur = localStorage.getItem("theme") || "black"; }catch(e){}
+    apply(themes[(themes.indexOf(cur) + 1) % themes.length]);
+  });
+})();
+</script>
+</body>
+</html>
