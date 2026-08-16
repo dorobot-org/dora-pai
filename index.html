@@ -42,7 +42,7 @@
     --color-accent-rgb:0,119,119;--color-title-rgb:204,136,0;--color-warn:#b35100;
   }
   html{transition:background-color .3s,color .3s}
-  html[data-theme=light] .hero-bg{opacity:.22}
+  html[data-theme=light] .hero-bg{opacity:.55;filter:invert(1) hue-rotate(180deg) saturate(.9)}
   body{transition:background-color .3s,color .3s}
   *{margin:0;padding:0;box-sizing:border-box}
   html{scroll-behavior:smooth}
@@ -496,7 +496,7 @@
       <div class="card"><span class="stat">VLA POLICY</span><h3>π0</h3><p>Physical Intelligence 开源的视觉-语言-动作（VLA）通用机器人策略模型——看懂场景、听懂指令、直接输出动作，DORA-PI 的"物理智能"名副其实。</p></div>
       <div class="card"><span class="stat">VLA POLICY</span><h3>NVIDIA GR00T</h3><p>NVIDIA 开源的人形机器人基础模型（GR00T N 系列），面向通用操作与全身运动控制，边缘推理 + 本体执行的典型负载。</p></div>
       <div class="card"><span class="stat">WORLD MODEL</span><h3>NVIDIA Cosmos 3 Edge</h3><p>NVIDIA 世界基础模型的边缘优化版本（Cosmos 3 Edge）：面向物理世界的视频生成与仿真，为机器人策略训练生成合成数据、评估动作后果，面向边缘部署优化，可与真实传感数据流闭环校验。</p></div>
-      <div class="card"><span class="stat">EDGE NPU</span><h3>板载轻量模型</h3><p>唤醒词、人脸识别、障碍物检测等低延迟反射式任务仍在 DORA-PI 的 6TOPS NPU 上本地完成——端边分工，各得其所。</p></div>
+      <div class="card"><span class="stat">ON-BOARD POLICY</span><h3>LeRobot 数据采集与策略模型</h3><p>预装 <a href="https://github.com/huggingface/lerobot">LeRobot</a>（Hugging Face 机器人学习库）：遥操作数据采集、LeRobotDataset 格式（同步视频 + 状态/动作 Parquet）、策略训练与部署开箱即用。支持的策略模型覆盖模仿学习（<b>ACT</b>、<b>Diffusion Policy</b>、VQ-BeT）、强化学习（TDMPC、HIL-SERL）与轻量 VLA（<b>SmolVLA</b>）——SmolVLA / ACT 级模型可直接在板载 NPU 上推理，大策略经星闪卸载边缘训练与推理。</p></div>
     </div>
 
     <div class="callout"><b>工作原理：</b>DORA-PI 上运行的 dora 数据流可将任意节点声明为<b>远程节点</b>——传感数据（图像、点云、语音）经星闪 SLB 通道上行至边缘服务器，推理结果（检测框、规划指令、语音回复）沿确定性通道下行，全程由星闪 QoS 保障时延上界。本地 NPU 负责低延迟反射式任务（避障、唤醒词），MoveIt / Nav2 / OpenCV / YOLO 在本地完成感知、规划与控制，大模型任务无缝卸载到边缘——<b>端边协同，一层数据流搞定</b>。</div>
