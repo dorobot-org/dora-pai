@@ -4,8 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>DORA-PI · Physical Intelligence 物理智能机器人主控板</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  @font-face{font-family:Geist;src:url(fonts/GeistVF.woff2) format("woff2");font-weight:100 900;font-display:swap}
+  @font-face{font-family:Geist Mono;src:url(fonts/GeistMonoVF.woff2) format("woff2");font-weight:100 900;font-display:swap}
+</style>
 <style>
   /* ===== dora-rs.ai design tokens (default "black" theme — neutral dark gray) ===== */
   :root{
@@ -66,14 +68,14 @@
   nav a{color:var(--color-text-dim);margin-left:16px;font-size:13.5px;font-weight:500;white-space:nowrap}
   nav a:hover{color:var(--color-accent);text-decoration:none}
   @media(max-width:1100px){nav{display:none}}
-  #theme-toggle{
+  #theme-toggle,#lang-toggle{
     display:flex;align-items:center;gap:8px;cursor:pointer;
     border:1px solid var(--color-surface-2);border-radius:999px;
     background:var(--color-surface-1);color:var(--color-text-dim);
     padding:6px 14px;font-size:12px;font-family:var(--font-mono);letter-spacing:1px;
     transition:border-color .2s,color .2s;
   }
-  #theme-toggle:hover{border-color:var(--color-accent);color:var(--color-accent)}
+  #theme-toggle:hover,#lang-toggle:hover{border-color:var(--color-accent);color:var(--color-accent)}
   #theme-toggle svg{width:14px;height:14px;fill:currentColor}
   .hidden{display:none!important}
 
@@ -213,11 +215,12 @@
       <a href="#edge">边缘算力</a>
       <a href="#scenes">应用场景</a>
     </nav>
-    <button id="theme-toggle" aria-label="切换主题">
+    <button id="theme-toggle" style="margin-right:8px" aria-label="切换主题">
       <svg class="theme-icon-black hidden" viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8z"/><circle cx="12" cy="12" r="5"/></svg>
       <svg class="theme-icon-light hidden" viewBox="0 0 24 24"><path d="M12 17a5 5 0 1 0-5-5 5 5 0 0 0 5 5zm0-13h0a1 1 0 0 0 1-1V2a1 1 0 0 0-2 0v1a1 1 0 0 0 1 1zm0 18h0a1 1 0 0 0-1 1v1a1 1 0 0 0 2 0v-1a1 1 0 0 0-1-1zM4 11H3a1 1 0 0 0 0 2h1a1 1 0 0 0 0-2zm18 0h-1a1 1 0 0 0 0 2h1a1 1 0 0 0 0-2zM6.34 5.22 5.4 4.28a1 1 0 0 0-1.41 1.41l.94.94A1 1 0 0 0 6.34 5.22zm13.37 13.37-.94-.94a1 1 0 0 0-1.41 1.41l.94.94a1 1 0 0 0 1.41-1.41zM5.4 19.72l.94-.94a1 1 0 1 0-1.41-1.41l-.94.94a1 1 0 0 0 1.41 1.41zM18.6 4.28l-.94.94a1 1 0 0 0 1.41 1.41l.94-.94a1 1 0 0 0-1.41-1.41z"/></svg>
       <span id="theme-label">black</span>
     </button>
+    <button id="lang-toggle" class="theme-toggle-btn" aria-label="切换语言"><span id="lang-label">EN</span></button>
   </div>
 </header>
 
@@ -540,6 +543,43 @@
   </div>
 </footer>
 
+<script src="i18n.js"></script>
+<script>
+(function(){
+  // store originals once
+  var walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+  var orig = new Map();
+  var node;
+  while(node = walker.nextNode()){
+    var t = node.nodeValue;
+    if(t && /[\u4e00-\u9fff]/.test(t)) orig.set(node, t);
+  }
+  function applyLang(lang){
+    orig.forEach(function(t, node){
+      if(lang === "en"){
+        var hit = I18N[t.trim()];
+        node.nodeValue = hit ? t.replace(t.trim(), hit) : t;
+      } else {
+        node.nodeValue = t;
+      }
+    });
+    document.documentElement.setAttribute("lang", lang === "en" ? "en" : "zh-CN");
+    try{ localStorage.setItem("lang", lang); }catch(e){}
+    document.getElementById("lang-label").textContent = lang === "en" ? "中文" : "EN";
+    document.title = lang === "en"
+      ? "DORA-PI · Physical Intelligence Robot Controller Board"
+      : "DORA-PI · Physical Intelligence 物理智能机器人主控板";
+  }
+  var lang = "cn";
+  try{ lang = localStorage.getItem("lang") || "cn"; }catch(e){}
+  document.getElementById("lang-toggle").addEventListener("click", function(){
+    var cur = "cn";
+    try{ cur = localStorage.getItem("lang") || "cn"; }catch(e){}
+    applyLang(cur === "cn" ? "en" : "cn");
+  });
+  applyLang(lang);
+})();
+</script>
 <script>
 (function(){
   var themes = ["black","light"];
