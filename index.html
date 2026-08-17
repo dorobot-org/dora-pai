@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DORA-PI · Physical Intelligence 物理智能机器人主控板</title>
+<title>DORA-PAI · Physical AI 机器人主控板</title>
 <style>
   @font-face{font-family:Geist;src:url(fonts/GeistVF.woff2) format("woff2");font-weight:100 900;font-display:swap}
   @font-face{font-family:Geist Mono;src:url(fonts/GeistMonoVF.woff2) format("woff2");font-weight:100 900;font-display:swap}
@@ -228,8 +228,8 @@
   <div class="hero-bg"></div>
   <div class="wrap hero-content">
     <div class="tag">面向 Physical AI 时代的机器人大脑</div>
-    <h1>DORA-PI</h1>
-    <p class="sub">基于 ARM 计算平台，预集成 <b>dora</b> 数据流框架、OminiX-API 本地推理环境与星闪（NearLink）机器人无线通信——以"通信、计算、软件框架、算法、AI 模型"五维一体的设计，为机器人的"感知—决策—执行—通信"全链路提供开箱即用的 Physical Intelligence 底座。</p>
+    <h1>DORA-PAI</h1>
+    <p class="sub">基于 ARM 计算平台，预集成 <b>dora</b> 数据流框架、OminiX-API 本地推理环境与星闪（NearLink）机器人无线通信——以"通信、计算、软件框架、算法、AI 模型"五维一体的设计，为机器人的"感知—决策—执行—通信"全链路提供开箱即用的 Physical AI 底座。</p>
     <div class="cta">
       <a class="btn primary" href="#specs">查看规格</a>
     </div>
@@ -290,8 +290,8 @@
     <h2>外观设计</h2>
     <p class="lead">CNC 加工铝合金外壳 · 银灰色阳极氧化 · 紧凑桌面级尺寸 · 三面视图</p>
     <div class="photo" style="max-width:100%">
-      <img src="images/enclosure-3view.png" alt="DORA-PI 外观设计三面视图（正视 / 顶视 / 后视）">
-      <div class="cap">DORA-PI 外观设计三面视图 —— 正视：CNC 银灰铝合金机身 + 雕刻 logo；顶视：顶部正中央低噪散热风扇；后视：全部接口单排紧凑排列（2× RJ45、4× USB 3.2、竖向 Type-C、2× CAN、UART、DC 供电、星闪天线），底部对齐。两侧 CNC 铣削散热格栅。</div>
+      <img src="images/enclosure-3view.png" alt="DORA-PAI 外观设计三面视图（正视 / 顶视 / 后视）">
+      <div class="cap">DORA-PAI 外观设计三面视图 —— 正视：CNC 银灰铝合金机身 + 雕刻 logo；顶视：顶部正中央低噪散热风扇；后视：全部接口单排紧凑排列（2× RJ45、4× USB 3.2、竖向 Type-C、2× CAN、UART、DC 供电、星闪天线），底部对齐。两侧 CNC 铣削散热格栅。</div>
     </div>
     <div class="grid cols3" style="margin-top:20px">
       <div class="card"><span class="stat">ENCLOSURE</span><h3>CNC 一体成型</h3><p>6061 铝合金 CNC 精密加工，银灰色阳极氧化表面处理，倒角边缘，兼顾质感、强度与电磁屏蔽。</p></div>
@@ -304,7 +304,7 @@
 <section id="software">
   <div class="wrap">
     <p class="kicker">Software Stack</p>
-    <h2>DORA-PI 独有软件栈</h2>
+    <h2>DORA-PAI 独有软件栈</h2>
     <p class="lead">不止于'能跑'，更要'出厂即跑'：dora 数据流 + 本地大模型推理一体化</p>
     <div class="grid cols2">
       <div class="card hl">
@@ -342,7 +342,7 @@
         <ul class="node-list">
           <li>语音识别<br><code>dora-funasr</code> · <code>dora-distil-whisper</code></li>
           <li>端点检测<br><code>dora-vad</code></li>
-          <li>语音合成<br><code>dora-kokoro-tts</code> · <code>dora-piper</code></li>
+          <li>语音合成<br><code>dora-kokoro-tts</code> · <code>dora-paiper</code></li>
           <li>实时翻译<br><code>dora-translate</code></li>
         </ul>
       </div>
@@ -432,9 +432,9 @@
       <tr><th>可靠性</th><td>802.1CB 帧复制消除 + 帧抢占</td><td>Polar 码 + HARQ，99.999% 可靠性</td></tr>
       <tr><th>介质</td><td>有线——每路传感器一根线，车内线束是整车最重部件之一，旋转部件需滑环</td><td><b>无线</b>——无走线、无滑环，机械臂末端与旋转云台自由部署</td></tr>
     </table>
-    <div class="callout"><b>同一工程哲学的两个答案：</b>车载场景用 TSN 改造有线以太网解决确定性问题；DORA-PI 用星闪改造无线通信解决同一个问题——同时获得 TSN 级确定性与无线部署自由。这正是"机器人传感器与控制通信"应有的形态。</div>
+    <div class="callout"><b>同一工程哲学的两个答案：</b>车载场景用 TSN 改造有线以太网解决确定性问题；DORA-PAI 用星闪改造无线通信解决同一个问题——同时获得 TSN 级确定性与无线部署自由。这正是"机器人传感器与控制通信"应有的形态。</div>
 
-    <div class="callout"><b>DORA-PI 全面集成星闪：</b>板载星闪 1.0 模组（星闪 2.0 模组 2027 年提供），并在 dora 数据流框架中内置星闪传输节点——无线传感器数据流自动携带高精度时间戳进入数据流图，控制指令走星闪确定性通道下发；WiFi 仅保留用于大流量非实时业务（日志回传、OTA）。为机器人提供真正"有 QoS、可同步、能组播"的无线通信底座。</div>
+    <div class="callout"><b>DORA-PAI 全面集成星闪：</b>板载星闪 1.0 模组（星闪 2.0 模组 2027 年提供），并在 dora 数据流框架中内置星闪传输节点——无线传感器数据流自动携带高精度时间戳进入数据流图，控制指令走星闪确定性通道下发；WiFi 仅保留用于大流量非实时业务（日志回传、OTA）。为机器人提供真正"有 QoS、可同步、能组播"的无线通信底座。</div>
     <p class="note">星闪联盟（<a href="https://www.isla.org.cn">isla.org.cn</a>）2020 年成立，成员单位超 300 家；星闪芯片已实现亿级规模出货，标准与产业生态成熟。</p>
   </div>
 </section>
@@ -442,11 +442,11 @@
 <section id="peripherals">
   <div class="wrap">
     <p class="kicker">Peripherals</p>
-    <h2>外设接入：传感器如何连接 DORA-PI</h2>
-    <p class="lead">LiDAR、深度相机、RGB 相机是机器人的三类核心传感器，DORA-PI 提供从板级到无线的完整接入方案——<b>有线全覆盖，星闪 Dongle 实现传感器无线化接入</b>。</p>
+    <h2>外设接入：传感器如何连接 DORA-PAI</h2>
+    <p class="lead">LiDAR、深度相机、RGB 相机是机器人的三类核心传感器，DORA-PAI 提供从板级到无线的完整接入方案——<b>有线全覆盖，星闪 Dongle 实现传感器无线化接入</b>。</p>
 
     <table>
-      <tr><th>传感器</th><td style="color:var(--color-text-bright);font-weight:600">DORA-PI 接入方式</td><td style="color:var(--color-text-bright);font-weight:600">支持的主流设备</td><td style="color:var(--color-text-bright);font-weight:600">适用场景</td></tr>
+      <tr><th>传感器</th><td style="color:var(--color-text-bright);font-weight:600">DORA-PAI 接入方式</td><td style="color:var(--color-text-bright);font-weight:600">支持的主流设备</td><td style="color:var(--color-text-bright);font-weight:600">适用场景</td></tr>
       <tr><th>LiDAR 激光雷达</th><td><b>千兆以太网</b>直连，点云即插即用；星闪 Dongle 无线接入（随星闪 2.0 生态推出）</td><td>Livox / RoboSense / Hesai 等主流雷达（RJ45 + UDP 点云协议），UART/USB 接口的三角雷达亦可直连</td><td>SLAM 建图、导航避障、多机协同感知</td></tr>
       <tr><th>深度相机</th><td><b>USB 3.2</b> 直连（机内 ≤3m 部署）；星闪 Dongle 无线接入，机身任意位置部署</td><td>Intel RealSense、奥比中光 Orbbec、OAK 等主流深度相机</td><td>3D 感知、障碍物检测、抓取引导</td></tr>
       <tr><th>RGB 相机</th><td>板级 <b>MIPI CSI-2</b> 直连 SoC（零拷贝进 dora 数据流）；整机 USB 3.2 / 以太网；星闪 Dongle 无线接入</td><td>MIPI 相机模组、USB 相机、GigE 工业相机</td><td>视觉识别、人脸交互、远程监控</td></tr>
@@ -458,7 +458,7 @@
       <div class="card hl">
         <span class="stat">2027 ROADMAP</span>
         <h3>星闪 Dongle：传感器无线化接入</h3>
-        <p>星闪 Dongle（规划中的配套产品，随星闪 2.0 生态推出）让 LiDAR / 深度相机 / RGB 相机无线接入 DORA-PI：传感器本地经 USB/以太网/MIPI 短距连接 Dongle，Dongle 以星闪 SLB 通道将数据流无线上行——基于星闪 SLB 标准能力：<b>确定性时延（~20µs 空口）、空口原生时间戳、单网关 4096 节点</b>，一个 DORA-PI 即可带全身传感器。</p>
+        <p>星闪 Dongle（规划中的配套产品，随星闪 2.0 生态推出）让 LiDAR / 深度相机 / RGB 相机无线接入 DORA-PAI：传感器本地经 USB/以太网/MIPI 短距连接 Dongle，Dongle 以星闪 SLB 通道将数据流无线上行——基于星闪 SLB 标准能力：<b>确定性时延（~20µs 空口）、空口原生时间戳、单网关 4096 节点</b>，一个 DORA-PAI 即可带全身传感器。</p>
       </div>
       <div class="card hl">
         <span class="stat">DATAFLOW NATIVE</span>
@@ -482,7 +482,7 @@
   <div class="wrap">
     <p class="kicker">Edge Cluster over NearLink</p>
     <h2>星闪连接边缘算力：<span class="accent">算力随需扩展</span></h2>
-    <p class="lead">板载 6TOPS NPU 满足常规感知与交互；当需要更大模型或更强并发推理时，DORA-PI 可通过<b>星闪确定性链路直连边缘计算服务器</b>——以 20µs 级空口时延上行传感数据、下行推理结果，语音交互与视觉理解体验接近本地推理，算力可按需扩展至数据中心级。</p>
+    <p class="lead">板载 6TOPS NPU 满足常规感知与交互；当需要更大模型或更强并发推理时，DORA-PAI 可通过<b>星闪确定性链路直连边缘计算服务器</b>——以 20µs 级空口时延上行传感数据、下行推理结果，语音交互与视觉理解体验接近本地推理，算力可按需扩展至数据中心级。</p>
 
     <h3 style="color:var(--color-heading);font-size:19px;margin-bottom:14px">可选边缘推理服务器</h3>
     <div class="grid cols3">
@@ -494,15 +494,15 @@
 
     <h3 style="color:var(--color-heading);font-size:19px;margin:28px 0 14px">边缘服务器上运行的模型</h3>
     <div class="grid cols3">
-      <div class="card"><span class="stat">SPEECH IN</span><h3>Qwen3-ASR</h3><p>语音识别大模型：DORA-PI 上 8 麦阵列拾取的音频流经星闪上行，边缘服务器完成高精度远场语音识别，嘈杂环境下依然可靠。</p></div>
-      <div class="card"><span class="stat">SPEECH OUT</span><h3>Qwen3-TTS</h3><p>语音合成大模型：富有表现力的自然语音回复在边缘生成，音频流实时下行至 DORA-PI 的 2×40W 喇叭播放。</p></div>
-      <div class="card"><span class="stat">VLA POLICY</span><h3>π0</h3><p>Physical Intelligence 开源的视觉-语言-动作（VLA）通用机器人策略模型——看懂场景、听懂指令、直接输出动作，DORA-PI 的"物理智能"名副其实。</p></div>
+      <div class="card"><span class="stat">SPEECH IN</span><h3>Qwen3-ASR</h3><p>语音识别大模型：DORA-PAI 上 8 麦阵列拾取的音频流经星闪上行，边缘服务器完成高精度远场语音识别，嘈杂环境下依然可靠。</p></div>
+      <div class="card"><span class="stat">SPEECH OUT</span><h3>Qwen3-TTS</h3><p>语音合成大模型：富有表现力的自然语音回复在边缘生成，音频流实时下行至 DORA-PAI 的 2×40W 喇叭播放。</p></div>
+      <div class="card"><span class="stat">VLA POLICY</span><h3>π0</h3><p>Physical Intelligence 开源的视觉-语言-动作（VLA）通用机器人策略模型——看懂场景、听懂指令、直接输出动作，DORA-PAI 的"Physical AI"名副其实。</p></div>
       <div class="card"><span class="stat">VLA POLICY</span><h3>NVIDIA GR00T</h3><p>NVIDIA 开源的人形机器人基础模型（GR00T N 系列），面向通用操作与全身运动控制，边缘推理 + 本体执行的典型负载。</p></div>
       <div class="card"><span class="stat">WORLD MODEL</span><h3>NVIDIA Cosmos 3 Edge</h3><p>NVIDIA 世界基础模型的边缘优化版本（Cosmos 3 Edge）：面向物理世界的视频生成与仿真，为机器人策略训练生成合成数据、评估动作后果，面向边缘部署优化，可与真实传感数据流闭环校验。</p></div>
       <div class="card"><span class="stat">ON-BOARD POLICY</span><h3>LeRobot 数据采集与策略模型</h3><p>预装 <a href="https://github.com/huggingface/lerobot">LeRobot</a>（Hugging Face 机器人学习库）：遥操作数据采集、LeRobotDataset 格式（同步视频 + 状态/动作 Parquet）、策略训练与部署开箱即用。支持的策略模型覆盖模仿学习（<b>ACT</b>、<b>Diffusion Policy</b>、VQ-BeT）、强化学习（TDMPC、HIL-SERL）与轻量 VLA（<b>SmolVLA</b>）——SmolVLA / ACT 级模型可直接在板载 NPU 上推理，大策略经星闪卸载边缘训练与推理。</p></div>
     </div>
 
-    <div class="callout"><b>工作原理：</b>DORA-PI 上运行的 dora 数据流可将任意节点声明为<b>远程节点</b>——传感数据（图像、点云、语音）经星闪 SLB 通道上行至边缘服务器，推理结果（检测框、规划指令、语音回复）沿确定性通道下行，全程由星闪 QoS 保障时延上界。本地 NPU 负责低延迟反射式任务（避障、唤醒词），MoveIt / Nav2 / OpenCV / YOLO 在本地完成感知、规划与控制，大模型任务无缝卸载到边缘——<b>端边协同，一层数据流搞定</b>。</div>
+    <div class="callout"><b>工作原理：</b>DORA-PAI 上运行的 dora 数据流可将任意节点声明为<b>远程节点</b>——传感数据（图像、点云、语音）经星闪 SLB 通道上行至边缘服务器，推理结果（检测框、规划指令、语音回复）沿确定性通道下行，全程由星闪 QoS 保障时延上界。本地 NPU 负责低延迟反射式任务（避障、唤醒词），MoveIt / Nav2 / OpenCV / YOLO 在本地完成感知、规划与控制，大模型任务无缝卸载到边缘——<b>端边协同，一层数据流搞定</b>。</div>
   </div>
 </section>
 
@@ -538,7 +538,7 @@
 
 <footer>
   <div class="wrap">
-    DORA-PI · Physical Intelligence 物理智能机器人主控板 · V1.0 · 2026<br>
+    DORA-PAI · Physical AI 机器人主控板 · V1.0 · 2026<br>
     dora: dora-rs.ai &nbsp;·&nbsp; 星闪联盟: isla.org.cn
   </div>
 </footer>
@@ -567,8 +567,8 @@
     try{ localStorage.setItem("lang", lang); }catch(e){}
     document.getElementById("lang-label").textContent = lang === "en" ? "中文" : "EN";
     document.title = lang === "en"
-      ? "DORA-PI · Physical Intelligence Robot Controller Board"
-      : "DORA-PI · Physical Intelligence 物理智能机器人主控板";
+      ? "DORA-PAI · Physical AI Robot Controller Board"
+      : "DORA-PAI · Physical AI 机器人主控板";
   }
   var lang = "cn";
   try{ lang = localStorage.getItem("lang") || "cn"; }catch(e){}
